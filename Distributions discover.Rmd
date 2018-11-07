@@ -1,0 +1,673 @@
+---
+title: "Distributon Explore"
+author: "BradMcFall"
+date: "November 4, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#
+
+#-------------------Librarys used---------------
+library(rgbif)
+library(tidyverse)
+library(knitr)
+
+```
+
+## R Markdown
+
+
+```{r}
+
+#------------------------------Sets and Creates a directory to store files
+setwd("C:/Users/Brad McFall/Documents/R/Distributions")
+dir.create("GbifEurycea")
+
+#------------------------------Creates list to read in and sets each name as unique
+
+#------------------------------Creates list to read in and sets each name as unique
+ 
+Upload_name_list<-c("Eurycea lucifuga","Eurycea longicauda", "Eurycea tynerensis", "Eurycea multiplicata","Eurycea spelaea",'Cheilanthes lanosa','Dodecatheon frenchii',
+'Luxilus pilsbryi',
+'Luxilus zonatus',
+'Luxilus coccogenis',
+'Luxilus zonistius',
+'Plethodon angusticlavius',
+'Plethodon caddoensis',
+'Plethodon ouchitae',
+'Plethodon fourchensis',
+'Plethodon albagua',
+'Desmognathus brimleyorum',
+'Plethodon serratus')
+
+Upload_name_list2<-c('Plethodon ouachitae','Plethodon albagula', 'Eurycea quadridigitata')
+
+sp_name<-unique(Upload_name_list2)
+
+
+```
+
+
+This is a
+
+```{r}
+
+readgbif<- function (name, limit){ 
+  #reads in GBIF data using package:rgbif, takes two parameters(scientific name(Genus space species as string) and a limit number on the amount of records to obtain, returns a GBIFclass object named with the species name.
+  
+  name<-occ_search(scientificName = name, limit = limit)
+  
+  return(name)
+}
+
+
+```
+
+## Including 
+
+You can also
+
+```{r pressure, echo=FALSE}
+
+
+#------------------------------loop----- reads in GBIF data for names in a list (only loops over list2)
+for(sp_name in Upload_name_list2){
+
+   name<-occ_search(scientificName = sp_name, limit=400) #calls rgbif occ_serach
+   df<-as_tibble(name$data)
+   write_csv(df, paste("GbifEurycea/",sp_name, sep=""))
+   
+}
+
+
+
+```
+
+```{r}
+
+#setwd("C:/Users/Brad McFall/Documents/R/Distributions/GbifEurycea")
+
+#reads csv file of GBIF data into a species named tibble
+  
+new_df2<-NULL
+path="C:/Users/Brad McFall/Documents/R/Distributions/"  
+new_names2<- unique(Upload_name_list2)
+for (new_names2 in Upload_name_list2) {
+  new_df2[[new_names2]]<-read_csv(paste(path,"GbifEurycea/",new_names2, sep=""))
+}
+#map(list, read_csv
+
+
+
+```
+
+
+
+```{r}
+
+for (i in seq_along(1:length(Upload_name_list))){
+nm[[i]]<-Upload_name_list[[i]]
+}
+
+
+
+#for (i in seq_along(1:length(Upload_name_list))){
+
+
+i=1
+while (i< length(Upload_name_list)) {
+   print(i)
+   name<-nm[[i]]
+    if (i==4){
+      
+   ggplot(new_df[[i]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.05)+
+   borders("state")+
+   coord_quickmap()+
+   labs(title="Distribution")
+      
+    }
+   i=i+1
+  
+}
+
+   ggplot(new_df[["Eurycea tynerensis"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")
+  
+ 
+ 
+  ggplot(new_df[["Plethodon angusticlavius"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.05)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")
+
+
+
+#------------------------------
+
+
+ ggplot(new_df[["Plethodon serratus"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.05)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")
+ 
+ 
+
+
+   ggplot(new_df[["Eurycea tynerensis"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")
+  
+ 
+ 
+  ggplot(new_df[["Plethodon angusticlavius"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.05)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")
+  
+   ggplot(new_df[["Eurycea multiplicata"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.05)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")
+  
+    ggplot(new_df[["Desmognathus brimleyorum"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.05)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")
+   
+  ggplot(new_df[["Plethodon fourchensis"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")
+  
+  
+   ggplot(new_df[["Plethodon caddoensis"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")
+  
+   
+   
+  ##-----------
+ 
+   
+    ggplot(new_df[["Plethodon serratus"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.05)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+       coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+  
+    ggplot(new_df2[["Plethodon ouachitae"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.3)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+       coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+  
+    ggplot(new_df[["Plethodon fourchensis"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+   
+     ggplot(new_df[["Plethodon caddoensis"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+       coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+  
+     ggplot(new_df[["Desmognathus brimleyorum"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+   coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+     
+     
+       ggplot(new_df2[["Plethodon albagula"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+   #--------------------------  
+ 
+  Pfo<-merge(new_df[["Plethodon fourchensis"]],new_df2[["Plethodon ouachitae"]], all=TRUE)
+  
+  
+        ggplot(Pfo, aes(x=decimalLongitude, y=decimalLatitude, color=name ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+        
+  
+   
+   Pfoc<-merge(new_df[["Plethodon caddoensis"]],Pfo, all=TRUE)
+   
+      ggplot(Pfoc, aes(x=decimalLongitude, y=decimalLatitude, color=name ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+ 
+      
+  PfocEmDb<-merge(EmDb, Pfoc, all=TRUE)    
+  
+     ggplot(PfocEmDb, aes(x=decimalLongitude, y=decimalLatitude, color=name ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))
+     
+       
+  
+ Pfocs<-merge(new_df[["Plethodon serratus"]],Pfoc, all=TRUE)
+ 
+     ggplot(Pfocs, aes(x=decimalLongitude, y=decimalLatitude, color=name ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))
+     
+  Pfocsa<-merge(new_df2[["Plethodon albagula"]], Pfocs, all=TRUE)
+  
+    ggplot(Pfocsa, aes(x=decimalLongitude, y=decimalLatitude, color=name ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))
+     
+     
+     
+EmDb<-merge(new_df[["Eurycea multiplicata"]], new_df[["Desmognathus brimleyorum"]], all=TRUE)
+
+  ggplot(EmDb, aes(x=decimalLongitude, y=decimalLatitude, color=name ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+    geom_smooth()
+  
+  
+AllSArkSal<- merge(EmDb,Pfocsa, all=TRUE)  
+
+ggplot(EmDb, aes(x=decimalLongitude, y=decimalLatitude, color=name ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))
+```
+
+
+
+```{r}
+
+  
+AllSArkSal<- merge(EmDb,Pfocsa, all=TRUE)  
+
+ggplot(AllSArkSal, aes(x=decimalLongitude, y=decimalLatitude, color=name ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+  geom_smooth()
+```
+
+
+
+```{r}
+
+    ggplot(new_df[["Plethodon fourchensis"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+
+Pfpoints<-new_df[["Plethodon fourchensis"]]%>%
+  select(name, decimalLongitude, decimalLatitude)
+
+#Pfmod$coefficients[[1]]
+Pfmod<- lm( decimalLatitude~ decimalLongitude , data=Pfpoints)
+
+ggplot(Pfpoints, aes(x=decimalLongitude, y=decimalLatitude)) + 
+  geom_point(size = 2, colour = "grey30") + 
+  geom_abline(intercept = Pfmod$coefficients[[1]], slope = Pfmod$coefficients[[2]])+
+  geom_smooth()+
+  geom_density2d()
+
+
+```
+
+
+```{r}
+library(igraph)
+library(geosphere)
+
+
+vv= as.data.frame(Pfpoints%>%
+                    filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+v=data.frame(
+  ids = 1:nrow(vv),
+  x=vv$decimalLongitude,
+  y=vv$decimalLatitude)
+
+
+
+D <- distm(vv, vv, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(D) {
+  n = dim(D)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,D[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eD = mat2list(D/1000)
+
+net <- graph.data.frame(eD[,1:2],directed = FALSE, vertices = v)
+E(net)$weight <- eD[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+```
+
+
+```{r}
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vv) {
+  me = get.edges(mst,1:ecount(mst))
+  R = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vv[me[k,],]
+    A$group = k
+    R <- rbind(R,A)
+  }
+  rownames(R) <- NULL
+  return(R)
+}
+
+R = mst2lines(mst,vv)
+## plot with geom_path and quick map
+v%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'red', size = 1)+
+  geom_point(data = v, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  geom_smooth(aes(x=x, y=y))+
+  borders("state")+
+  coord_quickmap()+
+  coord_cartesian(xlim = c(-94.3,-93.8), ylim=c(34.55,34.8))+
+  geom_abline(intercept = Pfmod$coefficients[[1]], slope = Pfmod$coefficients[[2]])
+ 
+
+ggplot(v, aes(x=x, y=y)) + 
+  geom_point(size = 2, colour = "grey30") + 
+  geom_abline(intercept = Pfmod$coefficients[[1]], slope = Pfmod$coefficients[[2]])+
+  geom_density2d()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'green', size = 1)+
+  geom_point(data = v, aes(x = x, y = y), color="black", size=3, alpha=0.5)+
+  theme_classic()
+ 
+
+
+```
+
+```{r}
+   ggplot(new_df[["Plethodon caddoensis"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+
+Pfpoints<-new_df[["Plethodon caddoensis"]]%>%
+  select(name, decimalLongitude, decimalLatitude)
+
+#Pfmod$coefficients[[1]]
+Pfmod<- lm( decimalLatitude~ decimalLongitude , data=Pfpoints)
+
+ggplot(Pfpoints, aes(x=decimalLongitude, y=decimalLatitude)) + 
+  geom_point(size = 2, colour = "grey30") + 
+  geom_abline(intercept = Pfmod$coefficients[[1]], slope = Pfmod$coefficients[[2]])+
+  geom_smooth()+
+  geom_density2d()
+
+vv= as.data.frame(Pfpoints%>%
+                    filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+v=data.frame(
+  ids = 1:nrow(vv),
+  x=vv$decimalLongitude,
+  y=vv$decimalLatitude)
+
+
+
+D <- distm(vv, vv, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(D) {
+  n = dim(D)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,D[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eD = mat2list(D/1000)
+
+net <- graph.data.frame(eD[,1:2],directed = FALSE, vertices = v)
+E(net)$weight <- eD[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vv) {
+  me = get.edges(mst,1:ecount(mst))
+  R = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vv[me[k,],]
+    A$group = k
+    R <- rbind(R,A)
+  }
+  rownames(R) <- NULL
+  return(R)
+}
+
+R = mst2lines(mst,vv)
+## plot with geom_path and quick map
+v%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'red', size = 1)+
+  geom_point(data = v, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  geom_smooth(aes(x=x, y=y))+
+  borders("state")+
+  coord_quickmap()+
+  coord_cartesian(xlim = c(-94.3,-93.8), ylim=c(34.55,34.8))+
+  geom_abline(intercept = Pfmod$coefficients[[1]], slope = Pfmod$coefficients[[2]])
+ 
+
+ggplot(v, aes(x=x, y=y)) + 
+  geom_point(size = 2, colour = "grey30") + 
+  geom_abline(intercept = Pfmod$coefficients[[1]], slope = Pfmod$coefficients[[2]])+
+  geom_smooth()+
+  geom_density2d()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'red', size = 1)+
+  geom_point(data = v, aes(x = x, y = y), color="gold", size=3, alpha=0.5)
+ 
+
+
+
+```
+
+
+```{r}
+ggplot(new_df2[["Plethodon ouachitae"]], aes(x=decimalLongitude, y=decimalLatitude ))+
+   geom_point(alpha=.5)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution")+
+     coord_cartesian(xlim = c(-94.5,-93.5), ylim=c(34,35))+
+     geom_smooth()
+
+Pfpoints<-new_df2[["Plethodon ouachitae"]]%>%
+  select(name, decimalLongitude, decimalLatitude)
+
+#Pfmod$coefficients[[1]]
+Pfmod<- lm( decimalLatitude~ decimalLongitude , data=Pfpoints)
+
+ggplot(Pfpoints, aes(x=decimalLongitude, y=decimalLatitude)) + 
+  geom_point(size = 2, colour = "grey30") + 
+  geom_abline(intercept = Pfmod$coefficients[[1]], slope = Pfmod$coefficients[[2]])+
+  geom_smooth()+
+  geom_density2d()
+
+vv= as.data.frame(Pfpoints%>%
+                    filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+v=data.frame(
+  ids = 1:nrow(vv),
+  x=vv$decimalLongitude,
+  y=vv$decimalLatitude)
+
+
+
+D <- distm(vv, vv, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(D) {
+  n = dim(D)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,D[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eD = mat2list(D/1000)
+
+net <- graph.data.frame(eD[,1:2],directed = FALSE, vertices = v)
+E(net)$weight <- eD[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vv) {
+  me = get.edges(mst,1:ecount(mst))
+  R = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vv[me[k,],]
+    A$group = k
+    R <- rbind(R,A)
+  }
+  rownames(R) <- NULL
+  return(R)
+}
+
+R = mst2lines(mst,vv)
+## plot with geom_path and quick map
+v%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'red', size = 1)+
+  geom_point(data = v, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  geom_smooth(aes(x=x, y=y))+
+  borders("state")+
+  coord_quickmap()+
+  coord_cartesian(xlim = c(-94.3,-93.8), ylim=c(34.55,34.8))+
+  geom_abline(intercept = Pfmod$coefficients[[1]], slope = Pfmod$coefficients[[2]])
+ 
+
+ggplot(v, aes(x=x, y=y)) + 
+  geom_point(size = 2, colour = "grey30") + 
+  geom_abline(intercept = Pfmod$coefficients[[1]], slope = Pfmod$coefficients[[2]])+
+  geom_smooth()+
+  geom_density2d()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'red', size = 1)+
+  geom_point(data = v, aes(x = x, y = y), color="gold", size=3, alpha=0.5)
+ 
+
+
+```
+
