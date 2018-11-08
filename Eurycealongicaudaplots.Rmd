@@ -1,0 +1,276 @@
+---
+title: "Geographic Distributions"
+author: "Brad McFall"
+date: "September 18, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Plot of Fish genus *Erimystax*
+
+```{r include=FALSE} 
+library(tidyverse)
+library(knitr)
+```
+
+```{r}
+Edismilis <- read.csv ("C:/Users/Brad McFall/Documents/R/Distributions/Erimystax_dismilisCSV2postoneg.csv")
+##kable(head(Edismilis))
+
+Expunctatus <- read.csv ("C:/Users/Brad McFall/Documents/R/Distributions/Erimystax_x_punctatusCSV2postoneg.csv")
+##kable(head(Expunctatus))
+
+Einsignis <- read.csv ("C:/Users/Brad McFall/Documents/R/Distributions/Erimystax_insignisCSV.csv")
+##kable(head(Einsignis))
+
+Eharryi <- read.csv ("C:/Users/Brad McFall/Documents/R/Distributions/Erimystax_harryiCSV.csv")
+##kable(head(Eharryi))
+
+```
+
+
+
+```{r}
+Erimys <- merge(Edismilis,Expunctatus, all = TRUE)
+                 Erimyst<- merge(Einsignis,Eharryi,all=TRUE)
+                 Erimystax<-merge(Erimyst,Erimys,all=TRUE)
+                 
+              
+
+
+```
+
+```{r message=FALSE}
+ggplot(Erimystax, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+  geom_point(size=3, alpha = .5)+
+  geom_rug()+
+  geom_smooth(se=FALSE)
+
+ggplot(Erimystax, aes( y =Latitude, x = Longitude, color = Species))+
+  geom_point(size=3, alpha = .5)+
+  geom_rug()+
+  geom_smooth(se=FALSE)
+
+ggplot(Erimystax, aes( y =Latitude, x = Longitude, color = Species))+
+  geom_bin2d(binwidth = c(1, 0.05))
+
+
+
+ggplot(Erimystax, aes( y =Latitude, x = Longitude, color=Species))+
+  geom_density2d()+
+  geom_rug()
+ 
+##ggplot(Erimystax, aes( y =Latitude, x = Longitude, color=Species))+
+  ##geom_
+
+ 
+ 
+
+```
+```{r}
+
+
+Pdubia<-read.csv("C:/Users/Brad McFall/Documents/R/Distributions/PhaceliadubiaCSV.csv")
+Phirsuta<-read.csv("C:/Users/Brad McFall/Documents/R/Distributions/PhaceliahirsutaCSV.csv")
+Pfimbriata<-read.csv("C:/Users/Brad McFall/Documents/R/Distributions/PhaceliafimbriataCSV.csv")
+Pgilioides <- read.csv("C:/Users/Brad McFall/Documents/R/Distributions/PhaceliagilioidesCSV.csv")
+```
+
+```{r message=FALSE}
+
+##ggplot(Pgilioides, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+ ## geom_point(size=2, alpha = .5)+
+ ## geom_smooth()
+
+##(Phirsuta, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+ ## geom_point(size=2, alpha = .5)+
+ ## geom_smooth()
+
+##ggplot(Pdubia, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+ ## geom_point(size=2, alpha = .5)+
+ ## geom_smooth()
+ 
+
+##ggplot(Pfimbriata, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+ ## geom_point(size=2, alpha = .5)
+
+
+```
+
+```{r message=FALSE}
+PhaeceliaPART <- merge(Pdubia,Phirsuta, all=TRUE)
+PhaeceliaMORE<- merge(PhaeceliaPART,Pgilioides, all=TRUE)
+PhaeceliaMOST<- merge(PhaeceliaMORE,Pfimbriata, all=TRUE)
+
+ggplot(PhaeceliaMOST, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+  geom_point(size=2, alpha = .5)+
+  geom_smooth()
+
+ggplot(PhaeceliaMOST, aes( y =Latitude, x = Longitude, color = Species))+
+  geom_density2d()+
+  geom_point()
+
+
+```
+
+
+```{r}
+ThirtyfiveNinety <- merge(Erimystax,PhaeceliaMOST, all=TRUE)
+ggplot(ThirtyfiveNinety, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+  geom_point(size=2, alpha = .5)+
+  geom_smooth()
+
+ggplot(ThirtyfiveNinety, aes( y =Latitude, x = Longitude, color = Species))+
+  geom_density2d()
+
+```
+```{r}
+Erimystaxtree <-c(Einsignis,Edismilis,Expunctatus,Eharryi)
+Phaceliatree <-c(Pgilioides, Pdubia,Phirsuta,Pfimbriata)
+
+
+ggplot(ThirtyfiveNinety, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+  geom_point( alpha = .5)+
+  geom_smooth()
+```
+
+```{r}
+
+Elucifuga <- read.csv("C:/Users/Brad McFall/Documents/R/Distributions/EurycealucifgaCSV.csv")
+
+
+Ccaroline <- read.csv ("C:/Users/Brad McFall/Documents/R/Distributions/Cottuscarolinaecsv2pos.csv")
+ggplot(Elucifuga, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+  geom_point(size=2, alpha = .5)+
+  geom_smooth()+
+  geom_density2d()
+
+
+ggplot(PhaeceliaMOST, aes( y =Latitude, x = Longitude, color = Species))+
+  geom_density2d()+
+  geom_point()
+
+merged<- merge(PhaeceliaMOST,Elucifuga, all=TRUE)
+
+ggplot(merged, aes( y =Latitude, x = Longitude, color = Species))+
+  geom_density2d()+
+  geom_point()
+
+```
+
+
+```{r}
+
+ggplot(Ccaroline, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+  geom_point(size=2, alpha = .5)+
+  geom_smooth()+
+  geom_density2d()
+
+CotEluf<- merge(Ccaroline,Elucifuga, all=TRUE)
+ggplot(CotEluf, aes( y =Latitude, x = Longitude, color = Scientific.name))+
+ geom_density2d()
+
+ggplot(CotEluf,aes(x = Latitude,y = Longitude ))+stat_density2d(geom="polygon",aes(color = Scientific.name,alpha = ..level..),fill="orangered",color="red4",linetype=2)+ theme_bw()+scale_x_continuous("X-coordinate")+scale_y_continuous("Y-coordinate")
+
+ggplot(CotEluf, aes( y =Latitude, x = Longitude))+
+ geom_density2d()+
+  geom_point()
+
+
+CotElufLeav <-merge(CotEluf,Leavenworthia, all=TRUE)
+
+ggplot(CotElufLeav, aes( y =Latitude, x = Longitude,color=Species))+
+ geom_density2d()
+  
+
+
+
+
+```
+
+```{r}
+CotPhae<- merge(PhaeceliaMOST, Ccaroline, all=TRUE)
+
+ggplot(CotPhae, aes(x = Longitude, y=Latitude, color=Scientific.name))+
+  geom_density2d()
+
+ggplot(CotPhae, aes(x = Longitude, y=Latitude))+
+  geom_density2d()
+
+ggplot(CotPhae,aes(x = Longitude,y = Latitude))+stat_density2d(geom="polygon",aes(alpha = ..level..),fill="orangered",color="red4",linetype=2)+ theme_bw()+scale_x_continuous("X-coordinate")+scale_y_continuous("Y-coordinate")
+```
+```{r}
+
+Elong<-read.csv("C:/Users/Brad McFall/Documents/R/Distributions/ElongallCSVfixed.csv")
+Ltor<-read.csv("C:/Users/Brad McFall/Documents/R/Distributions/LeavenworthiatorulosaCSV.csv")
+Luni<-read.csv("C:/Users/Brad McFall/Documents/R/Distributions/LeavenworthiaunifloraCSV.csv")
+```
+
+```{r}
+Leavenworthia <- merge(Ltor,Luni, all=TRUE)
+
+ggplot(Leavenworthia, aes(x= Longitude, y=Latitude, color=Species))+
+geom_density2d()+
+  geom_point()+
+  ylim(c(32,39))
+
+ggplot(Elong, aes(x= Longitude, y=Latitude, color=Species))+
+geom_density2d()+
+  geom_point()+
+  ylim(c(32,40))+
+  xlim(c(-97,-75))
+
+LeavElong <- merge(Leavenworthia,Elong, all=TRUE)
+ggplot(LeavElong, aes(x= Longitude, y=Latitude, color=Species))+
+geom_density2d()+
+  geom_point()
+
+PhaeLeav<-merge(Leavenorthia,PhaeceliaMOST, all =TRUE)
+
+ggplot(PhaeLeav, aes( y =Latitude, x = Longitude, color = Species))+
+  geom_density2d()+
+  geom_point()
+  
+```
+
+```{r}
+Etyn<-read.csv("C:/Users/Brad McFall/Documents/R/Distributions/EuryceatynerensisCSV.csv")
+Espe<-read.csv("C:/Users/Brad McFall/Documents/R/Distributions/EuryceaspelaeCSV.csv")
+
+Elongluci<-merge(Elong,Elucifuga, all=TRUE)
+Etylolu<-merge(Etyn,Elongluci, all=TRUE)
+Etylolusp<-merge(Etylolu, Espe, all=TRUE)
+
+                 
+ggplot(Etylolusp, aes(x=Longitude, y=Latitude, color=Species))+
+  geom_density2d()
+
+ElucLeav<-merge(Elucifuga,Leavenorthia, all=TRUE)
+ggplot(ElucLeav, aes(x=Longitude, y=Latitude, color=Species))+
+  geom_density2d()
+EluclongErim<- merge(Elongluci, Erimystax, all = TRUE)
+ggplot(EluclongErim, aes(x=Longitude, y=Latitude, color=Species))+
+  geom_density2d()
+  
+```
+
+
+```{r}
+Pampifoliara<-read.csv("C:/Users/Brad McFall/Documents/R/Distributions/Phloxampifoliaraw.csv")
+
+PampEluci<-merge(Elucifuga,Pampifoliara, all=TRUE)
+
+ggplot(PampEluci, aes(x=Longitude, y=Latitude, color=Species))+
+  geom_density2d()
+
+PampEluciPhaec<- merge(PampEluci, PhaeceliaMOST, all=TRUE)
+
+ggplot(PampEluciPhaec, aes(x=Longitude, y=Latitude, color=Species))+
+  geom_density2d()
+
+```
+
+

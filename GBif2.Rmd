@@ -1,0 +1,144 @@
+---
+title: "GBIF2"
+author: "BradMcFall"
+date: "October 1, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+
+
+library(rgbif)
+library(tidyverse)
+
+Eluc<-occ_search(scientificName = "Eurycea lucifuga", limit = 400)
+ Elong<-occ_search(scientificName = "Eurycea longicauda", limit =400)
+ Espel<-occ_search(scientificName = "Eurycea spelaea", limit =400)
+ Ety<-occ_search(scientificName = "Eurycea tynerensis", limit = 400)
+ Emult<-occ_search(scientificName = "Eurycea multiplicata", limit =400)
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+
+Argia_translata<-occ_search(scientificName = "Argia translata", limit = 400)
+ Argia_bipunctulata<-occ_search(scientificName = "Argia bipunctula", limit =400)
+ Gomphus_ozarkensis<-occ_search(scientificName = "Gomphus ozarkensis", limit=400)
+ Gomphus_quadricolor<-occ_search(scientificName = "Gomphus quadricolor", limit=400)
+ 
+
+```
+
+
+
+```{r}
+Elucdff<-as.tibble(Eluc$data)
+Elongdff<-as.tibble(Elong$data)
+Etydf<-as_tibble(Ety$data)
+Emultdf<-as_tibble(Emult$data)
+Espeldf<-as_tibble(Espel$data)
+Argtran<-as.tibble(Argia_translata$data)
+Gooz<-as.tibble(Gomphus_ozarkensis$data)
+Goqu<-as.tibble(Gomphus_quadricolor$data)
+
+```
+
+```{r}
+
+Elongluc<-merge(Elucdff,Elongdff, all=TRUE)
+EtdfEspe<-merge(Etydf,Espeldf, all = TRUE)
+ElonlucGo<-merge(Elongluc,Gozqu, all=TRUE)
+ElonlucArgtr<-merge(Elongluc,Argtran, all=TRUE)
+EtdfEsdpmult<-merge(Emultdf,EtdfEspe,all=TRUE)
+
+GozArgtr<-merge(Gooz,Argtran, all=TRUE)
+Gozqu<-merge(Gooz,Goqu, all=TRUE)
+
+EGA<-merge(GozArgtr,EtdfEspe, all=TRUE)
+
+SalOz<-merge(EtdfEsdpmult, Gooz, all=TRUE)
+
+```
+
+
+
+```{r}
+ElonlucArgtr%>%
+  ggplot( aes(x=decimalLongitude, y=decimalLatitude, color=name))+
+   geom_point()+
+   geom_density2d()+
+  coord_cartesian(ylim = c(25,45))
+
+Gozqu%>%
+  ggplot( aes(x=decimalLongitude, y=decimalLatitude, color=name))+
+   geom_point()+
+   geom_density2d()+
+  coord_cartesian(ylim = c(25,45))
+
+
+ElonlucGo%>%
+  ggplot( aes(x=decimalLongitude, y=decimalLatitude, color=name))+
+   geom_point()+
+   geom_density2d()+
+  coord_cartesian(ylim = c(32,45),xlim=c(-105,-60))
+
+
+
+```
+
+
+```{r}
+
+
+SalOz%>%
+  ggplot( aes(x=decimalLongitude, y=decimalLatitude, color=name))+
+   geom_point()+
+   geom_density2d()+
+  coord_cartesian(ylim = c(32,40),xlim=c(-97,-90))
+
+
+```
+
+
+```{r}
+
+ library(ks)
+ set.seed(8192)
+ samp <- 200
+ mus <- rbind(c(-2,2), c(0,0), c(2,-2))
+ Sigmas <- rbind(diag(2), matrix(c(0.8, -0.72, -0.72, 0.8), nrow=2), diag(2))
+ cwt <- 3/11
+ props <- c((1-cwt)/2, cwt, (1-cwt)/2)
+ x <- rmvnorm.mixt(n=samp, mus=mus, Sigmas=Sigmas, props=props)
+ Hpi1 <- Hpi(x=x)
+Hpi2 <- Hpi.diag(x=x)
+fhat.pi1 <- kde(x=x, H=Hpi1)
+fhat.pi2 <- kde(x=x, H=Hpi2)
+ plot(fhat.pi1)
+ plot(fhat.pi2)
+
+Cay<-tibble(Lat=c(x[,2]),
+       Long=c(x[,1])
+       
+       )
+
+ggplot(Cay,aes(x=Lat,y=Long))+
+  geom_density2d()
+
+
+```
+

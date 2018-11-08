@@ -1,0 +1,1520 @@
+---
+title: " An Exploration of GBIF data on the Salamader Eurycea"
+author: "BradMcFall"
+date: "September 22, 2018"
+output: html_document
+---
+
+
+
+
+
+```{r}
+
+##![](C:\Users\Brad McFall\Documents\R\Distributions\Two-lined Salamander - Eurycea bislineata.png)
+
+```
+
+
+##<span style="color:blue"> Eurycea bislineate collected by the Cornell Herp Club on October  at   </span>
+
+
+
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+```
+<span style="color:blue">  Here I load the rgbif and tidyverse libraries and down load the species information for the genus using the highly helpful RGBIF which saves data import steps by importing the data directly as classes </span>
+
+
+```{r}
+library(rgbif)
+library(tidyverse)
+ Eluc<-occ_search(scientificName = "Eurycea lucifuga", limit = 400)
+ Elong<-occ_search(scientificName = "Eurycea longicauda", limit =400)
+ Ety<-occ_search(scientificName = "Eurycea tynerensis", limit = 400)
+ Emult<-occ_search(scientificName = "Eurycea multiplicata", limit =400)
+ Espel<-occ_search(scientificName = "Eurycea spelaea", limit =400)
+ Ebis<-occ_search(scientificName= "Eurycea bislineata", limit =400)
+ Egut<-occ_search(scientificName= "Eurycea guttolineata", limit =400)
+ Ecir<-occ_search(scientificName= "Eurycea cirrigera", limit =400)
+ Equad<-occ_search(scientificName= "Eurycea quadridigitata", limit =400)
+ Ewil<-occ_search(scientificName= "Eurycea wilderae", limit =400)
+ Eneo<-occ_search(scientificName= "Eurycea neotenes", limit =400)
+ Echam<-occ_search(scientificName ="Eurycea chamberlani", limit=400)
+ Eaqua<-occ_search(scientificName= "Eurycea aquatica", limit = 400)
+ Ejuan<-occ_search(scientificName= "Eurycea junaluska", limit=400)
+ 
+```
+<span style="color:blue"> Here the data is converted from a class into tibble and all the species tibbles are merged into one. </span>
+
+
+```{r}
+
+Elucdff<-as_tibble(Eluc$data)
+Elongdff<-as_tibble(Elong$data)
+Etydf<-as_tibble(Ety$data)
+Emultdf<-as_tibble(Emult$data)
+Espeldf<-as_tibble(Espel$data)
+Ebisdf<-as_tibble(Ebis$data)
+Egutdf<-as_tibble(Egut$data)
+Ecidf<-as_tibble(Ecir$data)
+Equadf<-as_tibble(Equad$data)
+Ewildf<-as_tibble(Ewil$data)
+Eneodf<-as_tibble(Eneo$data)
+Echamdf<-as_tibble(Echam$data)
+Eaquadf<-as_tibble(Eaqua$data)
+Ejuandf<-as_tibble(Ejuan$data)
+
+
+Ecirwil<-as_tibble(Ewildf,Ecidf,all=TRUE)
+Eaqju<- as_tibble(Eaquadf,Ejuandf, all=TRUE)
+Ebiscir<-merge(Ecidf, Ebisdf, all=TRUE)
+Eluclong<-merge(Elucdff,Elongdff, all=TRUE)
+Etymul<-merge(Etydf,Emultdf, all=TRUE)
+Emore<- merge(Etymul, Eluclong, all=TRUE)
+Emorer<-merge(Emore,Espeldf, all=TRUE)
+Emost<-merge(Emorer, Ebisdf, all=TRUE)
+Emoster<-merge(Emost,Egutdf, all=TRUE)
+Emoster2<-merge(Emoster,Ecidf, all =TRUE)
+Emoster3<-merge(Emoster2,Equadf,all=TRUE)
+Emoster4<-merge(Emoster3,Ewildf, all=TRUE)
+Emoster5<-merge(Emoster4,Eneodf,all=TRUE)
+Emoster6<-merge(Emoster5, Eaquadf, all=TRUE)
+Emoster7<-merge(Emoster6, Ejuandf, all=TRUE)
+
+
+
+```
+
+
+
+```{r message=FALSE}
+
+
+ 
+  ##plot of points on US map
+ ggplot(Emoster7, aes(x=decimalLongitude, y=decimalLatitude))+
+   geom_point()+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution of Eurycea")
+
+
+
+
+```
+
+<span style="color:blue"> Here you have all of the collection localities represented </span>
+
+
+```{r}
+
+  ##plot of points on US m
+ ggplot(Emoster7, aes(x=decimalLongitude, y=decimalLatitude), color=species)+
+   geom_point()+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution of Eurycea")+
+  facet_wrap(~name, nrow = 4)
+
+
+```
+
+<span style="color:blue"> Facet_wrap makes creating individual species maps as easy as adding one line.</span>
+
+```{r}
+phylo<-tribble(
+  ~"name", ~"Age",
+ "Eurycea lucifuga", 48.5,
+"Eurycea longicauda" ,48.5,
+"Eurycea tynerensis", 26.0,
+ "Eurycea multiplicata" ,26.0,
+ "Eurycea spelaea", 26.0,
+  "Eurycea bislineata" , 40.5,
+ "Eurycea guttolineata", 48.5,
+  "Eurycea cirrigera", 40.5,
+  "Eurycea quadridigitata",40.5,
+ "Eurycea wilderae", 40.5,
+ "Eurycea neotenes",40.5,
+ "Eurycea chamberlani", 40.5,
+ "Eurycea aquatica",40.5,
+"Eurycea junaluska",40.5
+)
+
+
+Eagemoster7<- left_join(Emoster7, phylo)%>%
+  arrange(desc(Age))
+
+ ggplot(Eagemoster7, aes(x=decimalLongitude, y=decimalLatitude,size=Age, color=Age ))+
+   geom_point(alpha=.05)+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution of Eurycea")+
+   scale_size(trans = 'reverse')
+
+
+
+
+```
+
+<span style="color:blue"> Using information from a published phylogeny and joining that data one can see that it appears the genus may have orinated in the Ozarks.  Dispersal models however suggest instead that the species dispersed to the Ozarks when compared to the location of the last common ancestor.  We will explore this contrast in future maps</span>
+
+
+```{r}
+
+
+  ##plot of points on US map
+ ggplot(Emoster7, aes(x=decimalLongitude, y=decimalLatitude, color=name))+
+   geom_point()+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution of Eurycea")
+ 
+
+```
+
+
+<span style="color:blue"> color by species shows that there is a lot of geographic differentiation in the Genus</span>
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+ggplot (Eluclong, aes(decimalLongitude, decimalLatitude, color=name))+
+  geom_point()+
+  borders("state")+
+  coord_quickmap()+
+  xlim(c(-100,-70))+
+  ylim(c(30,50))+
+  geom_density2d()
+
+
+ggplot (Eluclong, aes(decimalLongitude, decimalLatitude, color=name))+
+  geom_point()+
+  geom_density2d()
+
+ggplot(Ebiscir, aes(decimalLongitude, decimalLatitude, color=name))+
+  geom_point()+
+  geom_density2d()
+
+
+```
+
+
+<span style="color:blue"> Density plots enables one to notice things that are not immediately visible </span>
+
+
+
+```{r}
+
+##common libraries
+library(igraph)
+library(geosphere)
+
+
+
+##coomon functions
+
+#selects the lats and longs from a species tibble and converts to a data frame
+getlatlon<-function(Edf){
+  as.data.frame(Edf)%>%
+    filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+    select(decimalLongitude, decimalLatitude)
+}
+
+##renames dataframe and provides a column of ids for looping ( do I need this column?)
+getlatxlony<- function( Edf){
+  data.frame(
+    ids=1:nrow(Edf),
+    x=Edf$decimalLongitude,
+    y=Edf$decimalLatitude)
+  
+  
+}
+
+```
+
+
+
+
+```{r }
+
+vv<-getlatlon(Espeldf)
+
+
+v=data.frame(
+  ids = 1:nrow(vv),
+  x=vv$decimalLongitude,
+  y=vv$decimalLatitude)
+
+
+
+D <- distm(vv, vv, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(D) {
+  n = dim(D)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,D[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eD = mat2list(D/1000)
+
+net <- graph.data.frame(eD[,1:2],directed = FALSE, vertices = v)
+E(net)$weight <- eD[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+
+
+```
+
+
+<span style="color:blue"> Here we use two packages to create (above) minimal spanning trees of the geographic distribution data and plot it using the path geom of ggplot (below) </span>
+
+```{r }
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vv) {
+  me = get.edges(mst,1:ecount(mst))
+  R = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vv[me[k,],]
+    A$group = k
+    R <- rbind(R,A)
+  }
+  rownames(R) <- NULL
+  return(R)
+}
+
+R = mst2lines(mst,vv)
+## plot with geom_path and quick map
+v%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'red', size = 1)+
+  geom_point(data = v, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -80))
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+
+```{r include=FALSE}
+
+
+vv= as.data.frame(Etydf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+v=data.frame(
+  ids = 1:nrow(vv),
+  x=vv$decimalLongitude,
+  y=vv$decimalLatitude)
+
+
+
+D <- distm(vv, vv, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(D) {
+  n = dim(D)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,D[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eD = mat2list(D/1000)
+
+net <- graph.data.frame(eD[,1:2],directed = FALSE, vertices = v)
+E(net)$weight <- eD[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vv) {
+  me = get.edges(mst,1:ecount(mst))
+  R = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vv[me[k,],]
+    A$group = k
+    R <- rbind(R,A)
+  }
+  rownames(R) <- NULL
+  return(R)
+}
+
+R = mst2lines(mst,vv)
+
+## plot with geom_path and quick map
+v%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'red', size = 1)+
+  geom_point(data = v, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -80))
+
+```
+
+
+
+```{r  include=FALSE}
+
+vvmul= as.data.frame(Emultdf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vmul=data.frame(
+  ids = 1:nrow(vvmul),
+  x=vvmul$decimalLongitude,
+  y=vvmul$decimalLatitude)
+
+
+
+Dmul <- distm(vvmul, vvmul, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dmul) {
+  n = dim(Dmul)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Dmul[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDmul = mat2list(Dmul/1000)
+
+net <- graph.data.frame(eDmul[,1:2],directed = FALSE, vertices = vmul)
+E(net)$weight <- eDmul[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvmul) {
+  me = get.edges(mst,1:ecount(mst))
+  Rmul = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvmul[me[k,],]
+    A$group = k
+    Rmul <- rbind(Rmul,A)
+  }
+  rownames(Rmul) <- NULL
+  return(Rmul)
+}
+
+Rmul = mst2lines(mst,vvmul)
+
+## plot with geom_path and quick map
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rmul, colour = 'blue', size = 1)+
+  geom_point(data = vmul, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -80))
+
+
+
+
+```
+
+
+```{r  include=FALSE}
+
+
+vvsp= as.data.frame(Espeldf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vsp=data.frame(
+  ids = 1:nrow(vvsp),
+  x=vvsp$decimalLongitude,
+  y=vvsp$decimalLatitude)
+
+
+
+Dsp <- distm(vvsp, vvsp, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dsp) {
+  n = dim(Dsp)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Dsp[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDsp = mat2list(Dsp/1000)
+
+net <- graph.data.frame(eDsp[,1:2],directed = FALSE, vertices = vsp)
+E(net)$weight <- eDsp[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvsp) {
+  me = get.edges(mst,1:ecount(mst))
+  Rsp = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvsp[me[k,],]
+    A$group = k
+    Rsp <- rbind(Rsp,A)
+  }
+  rownames(Rsp) <- NULL
+  return(Rsp)
+}
+
+Rsp=mst2lines(mst,vvsp)
+
+## plot with geom_path and quick map
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rsp, colour = 'green', size = 1)+
+  geom_point(data = vsp, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -80))
+
+
+
+
+```
+
+
+
+
+```{r }
+
+
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rmul, colour = 'red', size = 1)+
+  borders("state")+
+  coord_quickmap()+
+  coord_cartesian(xlim = c(-105,-80), ylim = c(28,42))+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'blue', size = 1)+
+  geom_path(aes(x=decimalLongitude, y= decimalLatitude, group=group), data= Rsp, colour='green', size=1)
+
+
+
+```
+
+```{r include=FALSE}
+
+
+vvlu= as.data.frame(Elucdff%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vlu=data.frame(
+  ids = 1:nrow(vvlu),
+  x=vvlu$decimalLongitude,
+  y=vvlu$decimalLatitude)
+
+
+
+Dlu <- distm(vvlu, vvlu, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dlu) {
+  n = dim(Dlu)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Dlu[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDlu = mat2list(Dlu/1000)
+
+net <- graph.data.frame(eDlu[,1:2],directed = FALSE, vertices = vlu)
+E(net)$weight <- eDlu[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvlu) {
+  me = get.edges(mst,1:ecount(mst))
+  Rlu = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvlu[me[k,],]
+    A$group = k
+    Rlu <- rbind(Rlu,A)
+  }
+  rownames(Rlu) <- NULL
+  return(Rlu)
+}
+
+Rlu = mst2lines(mst,vvlu)
+
+## plot with geom_path and quick map
+vlu%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rlu, colour = 'red', size = 1)+
+  geom_point(data = vlu, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -80))
+
+
+
+
+```
+
+
+```{r include=FALSE}
+
+
+vvlo= as.data.frame(Elongdff%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vlo=data.frame(
+  ids = 1:nrow(vvlo),
+  x=vvlo$decimalLongitude,
+  y=vvlo$decimalLatitude)
+
+
+
+Dlo <- distm(vvlo, vvlo, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dlo) {
+  n = dim(Dlo)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Dlo[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDlo = mat2list(Dlo/1000)
+
+net <- graph.data.frame(eDlo[,1:2],directed = FALSE, vertices = vlo)
+E(net)$weight <- eDlo[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvlo) {
+  me = get.edges(mst,1:ecount(mst))
+  Rlo = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvlo[me[k,],]
+    A$group = k
+    Rlo <- rbind(Rlo,A)
+  }
+  rownames(Rlo) <- NULL
+  return(Rlo)
+}
+
+Rlo = mst2lines(mst,vvlo)
+
+## plot with geom_path and quick map
+vlo%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rlo, colour = 'red', size = 1)+
+  geom_point(data = vlo, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -70))
+
+
+
+
+
+```
+
+```{r include=FALSE}
+
+
+vvgu= as.data.frame(Egutdf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vgu=data.frame(
+  ids = 1:nrow(vvgu),
+  x=vvgu$decimalLongitude,
+  y=vvgu$decimalLatitude)
+
+
+
+Dgu <- distm(vvgu, vvgu, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dgu) {
+  n = dim(Dgu)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Dgu[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDgu = mat2list(Dgu/1000)
+
+net <- graph.data.frame(eDgu[,1:2],directed = FALSE, vertices = vgu)
+E(net)$weight <- eDgu[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvgu) {
+  me = get.edges(mst,1:ecount(mst))
+  Rgu = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvgu[me[k,],]
+    A$group = k
+    Rgu <- rbind(Rgu,A)
+  }
+  rownames(Rgu) <- NULL
+  return(Rgu)
+}
+
+Rgu = mst2lines(mst,vvgu)
+
+## plot with geom_path and quick map
+vgu%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rgu, colour = 'red', size = 1)+
+  geom_point(data = vgu, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -80))
+
+```
+
+
+
+```{r  include=FALSE}
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rlu, colour = 'blue', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rlo, colour = 'red', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rgu, colour = 'purple', size = 1)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -70))
+
+
+
+```
+
+
+
+```{r  include=FALSE}
+
+
+vvci= as.data.frame(Ecidf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vci=data.frame(
+  ids = 1:nrow(vvci),
+  x=vvci$decimalLongitude,
+  y=vvci$decimalLatitude)
+
+
+
+Dci <- distm(vvci, vvci, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dci) {
+  n = dim(Dci)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Dci[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDci = mat2list(Dci/1000)
+
+net <- graph.data.frame(eDci[,1:2],directed = FALSE, vertices = vci)
+E(net)$weight <- eDci[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvci) {
+  me = get.edges(mst,1:ecount(mst))
+  Rci = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvci[me[k,],]
+    A$group = k
+    Rci <- rbind(Rci,A)
+  }
+  rownames(Rci) <- NULL
+  return(Rci)
+}
+
+Rci = mst2lines(mst,vvci)
+
+## plot with geom_path and quick map
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rci, colour = 'red', size = 1)+
+  geom_point(data = vci, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -80))
+
+
+
+```
+
+```{r  include=FALSE}
+
+vvbis= as.data.frame(Ebisdf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vbis=data.frame(
+  ids = 1:nrow(vvbis),
+  x=vvbis$decimalLongitude,
+  y=vvbis$decimalLatitude)
+
+
+
+Dbis <- distm(vvbis, vvbis, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dbis) {
+  n = dim(Dbis)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Dbis[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDbis = mat2list(Dbis/1000)
+
+net <- graph.data.frame(eDbis[,1:2],directed = FALSE, vertices = vbis)
+E(net)$weight <- eDbis[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvbis) {
+  me = get.edges(mst,1:ecount(mst))
+  Rbis = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvbis[me[k,],]
+    A$group = k
+    Rbis <- rbind(Rbis,A)
+  }
+  rownames(Rbis) <- NULL
+  return(Rbis)
+}
+
+Rbis = mst2lines(mst,vvbis)
+
+## plot with geom_path and quick map
+vbis%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rbis, colour = 'red', size = 1)+
+  geom_point(data = vbis, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(35,47))+
+  xlim(c(-85, -65))
+
+
+
+```
+
+
+```{r include=FALSE}
+
+
+vvwi= as.data.frame(Ewildf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vwi=data.frame(
+  ids = 1:nrow(vvwi),
+  x=vvwi$decimalLongitude,
+  y=vvwi$decimalLatitude)
+
+
+
+Dwi <- distm(vvwi, vvwi, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dwi) {
+  n = dim(Dwi)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Dwi[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDwi = mat2list(Dwi/1000)
+
+net <- graph.data.frame(eDwi[,1:2],directed = FALSE, vertices = vwi)
+E(net)$weight <- eDwi[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvwi) {
+  me = get.edges(mst,1:ecount(mst))
+  Rwi = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvwi[me[k,],]
+    A$group = k
+    Rwi <- rbind(Rwi,A)
+  }
+  rownames(Rwi) <- NULL
+  return(Rwi)
+}
+
+Rwi = mst2lines(mst,vvwi)
+
+## plot with geom_path and quick map
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rwi, colour = 'red', size = 1)+
+  geom_point(data = vwi, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-90, -80))
+
+
+```
+
+
+
+```{r   include=FALSE}
+
+vvaq= as.data.frame(Eaquadf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vaq=data.frame(
+  ids = 1:nrow(vvaq),
+  x=vvaq$decimalLongitude,
+  y=vvaq$decimalLatitude)
+
+
+
+Daq <- distm(vvaq, vvaq, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Daq) {
+  n = dim(Daq)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Daq[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDaq = mat2list(Daq/1000)
+
+net <- graph.data.frame(eDaq[,1:2],directed = FALSE, vertices = vaq)
+E(net)$weight <- eDaq[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvaq) {
+  me = get.edges(mst,1:ecount(mst))
+  Raq = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvaq[me[k,],]
+    A$group = k
+    Raq <- rbind(Raq,A)
+  }
+  rownames(Raq) <- NULL
+  return(Raq)
+}
+
+Raq = mst2lines(mst,vvaq)
+
+## plot with geom_path and quick map
+v%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Raq, colour = 'red', size = 1)+
+  geom_point(data = vaq, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -80))
+
+
+
+```
+
+
+```{r  include=FALSE}
+
+
+vvju= as.data.frame(Ejuandf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vju=data.frame(
+  ids = 1:nrow(vvju),
+  x=vvju$decimalLongitude,
+  y=vvju$decimalLatitude)
+
+
+
+Dju <- distm(vvju, vvju, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dju) {
+  n = dim(Dju)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Dju[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDju = mat2list(Dju/1000)
+
+net <- graph.data.frame(eDju[,1:2],directed = FALSE, vertices = vju)
+E(net)$weight <- eDju[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvju) {
+  me = get.edges(mst,1:ecount(mst))
+  Rju = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvju[me[k,],]
+    A$group = k
+    Rju <- rbind(Rju,A)
+  }
+  rownames(Rju) <- NULL
+  return(Rju)
+}
+
+Rju = mst2lines(mst,vvju)
+
+## plot with geom_path and quick map
+v%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rju, colour = 'red', size = 1)+
+  geom_point(data = vju, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(34,38))+
+  xlim(c(-85, -80))
+
+
+
+```
+
+```{r  include=FALSE}
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rbis, colour = 'blue', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rci, colour = 'red', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rwi, colour = 'purple', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rju, colour = 'green', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Raq, colour = 'orange', size = 1)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -70))
+
+```
+
+
+
+```{r include=FALSE}
+
+vvne= as.data.frame(Eneodf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+
+
+
+vne=data.frame(
+  ids = 1:nrow(vvne),
+  x=vvne$decimalLongitude,
+  y=vvne$decimalLatitude)
+
+
+
+Dne <- distm(vvne, vvne, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dne) {
+  n = dim(Dne)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,D[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDne = mat2list(Dne/1000)
+
+net <- graph.data.frame(eDne[,1:2],directed = FALSE, vertices = vne)
+E(net)$weight <- eDne[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+mst2lines <- function(mst, vvne) {
+  me = get.edges(mst,1:ecount(mst))
+  Rne = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvne[me[k,],]
+    A$group = k
+    Rne <- rbind(Rne,A)
+  }
+  rownames(Rne) <- NULL
+  return(Rne)
+}
+
+Rne = mst2lines(mst,vvne)
+
+## plot with geom_path and quick map
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rne, colour = 'red', size = 1)+
+  geom_point(data = vne, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-100, -85))
+
+
+```
+
+```{r  }
+
+vvqu= as.data.frame(Equadf%>%
+                   filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+                    select(decimalLongitude,decimalLatitude))
+getlatlon<-function(Edf){
+  as.data.frame(Edf)%>%
+    filter(!is.na(decimalLongitude),!is.na(decimalLatitude))%>%
+    select(decimalLongitude, decimalLatitude)
+  }
+View(vvqu)
+v2qu<-getlatlon(Equadf)
+View(v2qu)
+
+vqu=data.frame(
+  ids = 1:nrow(vvqu),
+  x=vvqu$decimalLongitude,
+  y=vvqu$decimalLatitude)
+
+
+
+Dqu <- distm(vvqu, vvqu, fun=distVincentyEllipsoid) 
+
+
+
+mat2list <- function(Dqu) {
+  n = dim(Dqu)[1]
+  k <- 1
+  e <- matrix(ncol = 3,nrow = n*(n-1)/2)
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      e[k,] = c(i,j,Dqu[i,j])
+      k<-k+1
+    }
+  }
+  return(e)
+}
+
+eDqu = mat2list(Dqu/1000)
+
+net <- graph.data.frame(eDqu[,1:2],directed = FALSE, vertices = vqu)
+E(net)$weight <- eDqu[,3] # Important use edge weight rather than net$weight
+mst <- minimum.spanning.tree(net)
+
+par(mfrow=c(1,2), mar=c(0,1,0.75,0)) 
+plot(net,vertex.label=NA)
+plot(mst, vertex.shape="none",edge.label=round(E(mst)$weight))
+
+
+
+
+
+## grourp the distance matrix in to lines for use with ggplot geom_path
+
+
+
+mst2lines <- function(mst, vvqu) {
+  me = get.edges(mst,1:ecount(mst))
+  Rqu = data.frame(lon=NULL,lat=NULL,group=NULL)
+  for (k in 1:ecount(mst)) {
+    A = vvqu[me[k,],]
+    A$group = k
+    Rqu <- rbind(Rqu,A)
+  }
+  rownames(Rqu) <- NULL
+  return(Rqu)
+}
+
+Rqu = mst2lines(mst,vvqu)
+
+## plot with geom_path and quick map
+v%>%
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rqu, colour = 'red', size = 1)+
+  geom_point(data = vqu, aes(x = x, y = y), color="gold", size=3, alpha=0.5)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -80))
+
+
+```
+
+```{r include=FALSE}
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rqu, colour = 'red', size = 1)+
+geom_path(aes(x=decimalLongitude, y= decimalLatitude, group=group), data= Rne, colour="blue", size=1)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -80))
+
+
+```
+
+```{r }
+
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rmul, colour = 'red', size = 1)+
+  borders("state")+
+  coord_quickmap()+
+    ylim(c(28,42))+
+  xlim(c(-105, -70))+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'blue', size = 1)+
+  geom_path(aes(x=decimalLongitude, y= decimalLatitude, group=group), data= Rsp, colour='green', size=1)
+
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rqu, colour = 'red', size = 1)+
+geom_path(aes(x=decimalLongitude, y= decimalLatitude, group=group), data= Rne, colour="blue", size=1)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -70))
+
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rbis, colour = 'blue', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rci, colour = 'red', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rwi, colour = 'purple', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rju, colour = 'green', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Raq, colour = 'orange', size = 1)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -70))
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rlu, colour = 'blue', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rlo, colour = 'red', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rgu, colour = 'purple', size = 1)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -70))
+
+
+
+
+
+
+
+```
+
+
+```{r}
+
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rmul, colour = 'red', size = 1)+
+  borders("state")+
+  coord_quickmap()+
+    ylim(c(28,42))+
+  xlim(c(-105, -70))+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = R, colour = 'blue', size = 1)+
+  geom_path(aes(x=decimalLongitude, y= decimalLatitude, group=group), data= Rsp, colour='green', size=1)
+
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rqu, colour = 'red', size = 1)+
+geom_path(aes(x=decimalLongitude, y= decimalLatitude, group=group), data= Rne, colour="blue", size=1)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -70))
+
+
+ggplot()+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rbis, colour = 'blue', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rci, colour = 'red', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rwi, colour = 'purple', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rju, colour = 'green', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Raq, colour = 'orange', size = 1)+
+  geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rlu, colour = 'blue', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rlo, colour = 'red', size = 1)+
+    geom_path(aes(x = decimalLongitude, y =decimalLatitude, group=group), data = Rgu, colour = 'purple', size = 1)+
+  borders("state")+
+  coord_quickmap()+
+  ylim(c(28,42))+
+  xlim(c(-105, -70))
+
+
+
+```
+
+
+
+```{r}
+
+ ggplot(Eagemoster7, aes(x=decimalLongitude, y=decimalLatitude,size=Age, color=as.factor(Age) ))+
+   borders("state")+
+   coord_quickmap()+
+  labs(title="Distribution of Eurycea")+
+   scale_size(trans = 'reverse')+
+   geom_smooth()
+
+
+
+```
+
